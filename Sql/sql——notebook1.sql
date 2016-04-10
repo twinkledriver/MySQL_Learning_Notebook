@@ -1,7 +1,8 @@
 #************************************
 mysql_笔记——第二天03开始
 
-mysql -uroot -p #输入密码进入mysql
+mysql -uroot -p;
+#输入密码进入mysql
 
 set names gbk;
 
@@ -129,8 +130,50 @@ select * from my_date；
 
 -- timestamp:修改记录  修改东西 timestamp也会自动更新
 
- 
+-- 获取 时间戳
+select unix_timestamp();
 
+#******************************************************
+#字符串类型
+
+-- 如何选择定长或者是变长字符串呢？
+-- 定长的磁盘空间比较浪费，但是效率高；如果数据基本上确定长度都一样，就使用定长，如身份证，电话号码，手机号码等。
+-- 变长反之；如果数据不能确定长度（不同数据有变化），如姓名，地址等
+
+#文本字符串
+
+-- 如果数据量非常大 ，通常说超过255个字符
+--根据数据格式 又分为text blob
+--Text：存储文字  -- Blob 存储二进制数据（通常不用）
+
+#枚举字符串  定义：enum
+-- 创建枚举表
+create table my_enum(
+gender enum('男性','女性','保密')
+)charset utf8;
+
+
+desc my_enum;
+
+#枚举作用
+#作用一
+-- 加入数据 （数据只能是规定数据中的一个）
+insert into my_enum values('男'),('保密');
+
+#错误
+insert into my_enum values('Male');
+ 
+#作用二：节省空间（单选框）
+
+#证明数据存储的是数值：字段取出+0 看结果
+
+select gender+0 ,gender from my_enum;
+
+#枚举实质：编号 存进去数值  
+
+insert into my_enum values('1'),('2');
+
+select * from my_enum;
 
 
 
