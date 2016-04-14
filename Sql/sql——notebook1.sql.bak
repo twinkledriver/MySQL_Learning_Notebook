@@ -149,7 +149,7 @@ select unix_timestamp();
 #枚举字符串  定义：enum
 -- 创建枚举表
 create table my_enum(
-gender enum('男','女','保密')
+gender enum('男性','女性','保密')
 )charset utf8;
 
 
@@ -173,7 +173,137 @@ select gender+0 ,gender from my_enum;
 
 insert into my_enum values('1'),('2');
 
-select * from 
+select * from my_enum;
+
+create table my_set(
+hobby set('篮球','足球','乒乓球','排球','台球','网球','棒球')
+)charset utf8;
+
+-- 插入数据
+
+insert into my_set values('足球,台球,网球');
+insert into my_set values(3);
+
+select hobby+0,hobby from my_set;
+
+--98转二进制01100010对应set 位置 （逆序）
+-- 集合元素 对应 二进制位 
+-- 顺序 无关系 对应位置 置1
+-- 规范数据 节省空间
+
+
+varchar 在utf8 开辟最大空间21844  gbk下32766
+
+max如：
+create table my_set(
+name vachar(21844)
+)charset utf8;
+
+-- 创建班级表
+create table my_class(
+name varchar(20) not null,
+room varchar(20) null  --  默认 空
+)charset utf8;
+
+
+-- 创建表
+-- comment 提示
+create table my_teacher(
+name varchar(20) not null comment '姓名',
+money decimal(10.2) not null comment '工资' 
+)charset utf8;
+
+
+desc my_teacher;
+show create table my_teacher;
+
+-- 默认值
+
+--默认值：某一种数据经常性的出现某个具体的值，可以在一开始就指定好，用户可以选择性使用
+-- 关键字 ： default
+
+-- 举例
+
+create table my_default(
+name varchar(20) not null,
+age tinyint unsigned default 0,
+gender enum('男','女','保密') default '男'
+)charset utf8;
+
+-- 默认值 生效
+
+
+
+#*******************************************#*******************************************
+#*******************************************#*******************************************
+#*******************************************#*******************************************
+
+#第三天 视频
+
+#字段属性
+
+#主键 唯一键 自增长
+
+#主键： 一张表只有一个字段可以使用对应的键，不能重复。
+#一张表 最多只有一个主键
+
+
+#一开始 就要 Set name gbk;
+
+
+
+#增加 主键 不能为空
+
+-- 方案1： 在字段后加 primary key
+
+-- 举例
+
+create table my_pri1(
+name varchar(20) not null comment '姓名',
+number char(10) primary key comment '学号:itcast+0000,不能重复'
+)charset utf8;
+
+desc my_pri1;
+
+--  方案2： 在所有字段之后，
+
+-- 复合主键
+
+create table my_pri2(
+number char(10) comment'学号：itcast+0000',
+course char(10) comment '课程代码：3901+0000',
+score tinyint unsigned default 60 comment '成绩',
+-- 增加复合主键
+primary key(number,course)
+
+)charset utf8;
+
+desc my_pri2;
+
+
+--  方案2： 表已创建 追加主键:修改表字段 属性  和 追加
+-- 追加 主键
+
+create table my_pri3(
+course char(10) not null comment'课程编号：',
+name varchar(10) not null comment '课程名字'
+);
+
+alter table my_pri3 modify course char(10) primary key comment 
+
+
+
+
+Alter table 表名  add
+
+
+
+
+
+ 
+
+
+
 
 
 
