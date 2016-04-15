@@ -289,12 +289,69 @@ course char(10) not null comment'课程编号：',
 name varchar(10) not null comment '课程名字'
 );
 
-alter table my_pri3 modify course char(10) primary key comment 
+alter table my_pri3 modify course char(10) primary key comment '课程编号：';
+ -- 或者
+
+alter table my_pri3 add primary key(course);
+
+#***********************************************
+ #主键约束  主键中对应的字段的数据不允许 重复
+
+ # 主键删除  主键没有办法 更新，只能删除 在 增加
+
+
+ Alter table 表名 drop primary key;
+
+ Alter table my_pri3 drop primary key;
+
+ #主键(唯一)分类
+ 很少使用业务数据 作为主键 字段（如 主键 学号 课程号）
+大部分 使用逻辑性 字段（字段没有业务含义，值是什么无所谓）
+
+Create table my_student(
+Id int primary key auto_increment comment'逻辑主键；自增长', -- 逻辑主键
+Number char(10) not null comment' 学号',
+Name varchar(10) not null
+)
+
+#自动增长
+
+create table my_auto(
+id int primary key auto_increment comment '自动增长',
+name varchar(10) not null
+)charset utf8;
+
+desc my_auto;
+
+
+# 当给定的值为默认 NULL 触发
+
+-- 触发自增长
+insert into my_auto(name) values('东红');
+insert into my_auto values (null,'感号');
+insert into my_auto values (default,'躺赢');
+
+
+select * from my_auto;
+
+自增长如果对应的字段 输入了值，那么自增长失效，但是下次从最大开始自增长。
+
+-- 指定数据
+
+insert into my_auto values(8,'等等');
+insert into my_auto values(NUll,'发给');
+
+show create table my_auto;
+
+-- 修改自增长
+自增长如果是涉及到 字段 改变：必须 先删除 再创建
+修改当前自增长 只能比当前的最大值 要大 否则无效
+
+Alter table my_auto auto_increment =6; (无效)
+Alter table my_auto auto_increment =15;
 
 
 
-
-Alter table 表名  add
 
 
 
