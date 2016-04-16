@@ -367,6 +367,48 @@ Alter table my_auto modify id int primary key;  -- 不行 主键不在属性
 
 alter table my_auto modify id int;   
 
+-- 唯一键：很多字段具有唯一键，但只有一个主键。所以有了唯一键
+-- 唯一键默认的允许为空
+-- 方案一
+
+create table my_unique1(
+number char(10) unique comment '学号：唯一，允许为空',
+name varchar(20) not null
+)charset utf8;
+
+-- 方案二 Not null + 唯一 显示成 主键，实质上不是主键
+create table my_unique2(
+number char(10) not null comment '学号：唯一，允许为空',
+name varchar(20) not null,
+
+unique key(number)
+)charset utf8;
+
+-- 方案三 在创建标志后 增加唯一键 追加
+
+create table my_unique3(
+id int primary key auto_increment,
+number char(10) not null,
+name varchar(20) not null 
+)charset utf8;
+
+alter table my_unique3 add unique (number);
+
+-- 删除 唯一键
+
+alter table 表名 drop index 索引名字 -- 字段名 就是 索引名字
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
