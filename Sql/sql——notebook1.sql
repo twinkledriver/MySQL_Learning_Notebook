@@ -478,11 +478,144 @@ alter table 表名 drop index 索引名字 -- 字段名 就是 索引名字
 这种 叫  逆规范化  但是 会导致 数据冗余 增加。
 
 逆规范化：磁盘利用率与效率的对抗
-	 
+
+新增数据
+
+#******************************************************
+insert into 表名[(字段列表)] values (值列表);
+
+
+
+主键冲突：更新操作
+
+方法一
+
+Insert into 表名[(字段列表：包含主键)]values(值列表) on duplicate key update 字段 =新值;
+
+
+#对 表 my_class 操作
+
+desc my_class;
+
+1，增加主键
+
+alter table my_class add primary key(name);
+
+2,插入数据
+
+insert into my_class values ('PHP0810','B203');
+
+select * from my_class;
+
+如果再次插入：
+insert into my_class values ('PHP0810','B205')
+
+-- 报错
+--  进行 冲突处理
+
+on duplicate key update room='B205';
+
+这样 就对 有主键的 字段 进行了 修改。
+
+方法二：主键冲突：替换：
+Replace into my_class values('PHP0710','A203');
+
+#**************************************************
+
+蠕虫 复制
+
+蠕虫复制：从已有的数据中去获取 数据，然后又进行新增操作。 数据 成倍增加。
+
+表创建高级操作：从 已有表 创建新表（复制表结构）
+
+对
+
+
+create table my_gbk(
+name varchar(32766)
+
+)charset gbk;
+
+-- 复制 创建表
+-- 只 复制  结构 并不复制 数据
+create table my_copy like my_gbk;
+
+-- 蠕虫复制 先查数据 再新增一遍
+
+insert into my_copy select * from my_collate_bin;
+
+select * from my_copy;
+
+ #每操作一次 就复制 一次。整个表   感觉‘分裂’ 
+
+#意义：
+1，从已有表 拷贝 到新表 。
+1，使表 迅速 膨胀到一定的 数量级 以测试。
+
+#高级——更新数据
+
+基本语法  
+
+跟新部分 数据
+
+update my_copy set name='c' where name='a' limit 3; # 前三个
+
+大小写 都被 更改了
+
+查看一下：
+show create table my_copy;
+
+#高级 —— 数据删除
+
+与更新类似，通过 limit  来限制 数量
+ #  删 10个‘b’
+Delete from my_copy where name='b' limit 10;
+
+删除 ：如果表中存在 主键  自增长 ，删除之后 不会影响 自增长
+
+#给 student表 add 一个主键
+
+
+alter table te_student add id int;
+
+alter table te_student modify id int not null;
+alter table te_student add primary key(id);
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
 
 
 
