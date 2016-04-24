@@ -576,11 +576,346 @@ Delete from my_copy where name='b' limit 10;
 #给 student表 add 一个主键
 
 
-alter table te_student add id int;
 
-alter table te_student modify id int not null;
+
+alter table te_student modify id int not null ;
+
+#修改 id
+update  te_student set id=1 where name='Jerry';
+
+update  te_student set id=2 where name='Lucy';
+
+update  te_student set id=3 where name='Marry';
+
+update  te_student set id=4 where name='Lily';
+
+update  te_student set id=5 where name='Bob';
+
+insert into te_student values (201601,'Bob','Male',18,001);
+
+show create table te_student;
 alter table te_student add primary key(id);
 
+#给id 添加 自增长
+
+alter table te_student modify id int auto_increment;
+
+
+#如果 删除 数据  查看 自增长也保持 原来的值
+
+delete from te_student;  #(未执行)
+
+#只能 删除表重建
+
+#有一个新的 语句 清空表 重置自增长
+
+truncate te_student;
+
+#***********************************************
+
+# 高级 查询数据
+
+select 字段 from 表名 where 条件
+
+#完整 语法：
+
+select[select 选项]  字段列表[字段别名]或者*   from  数据源  [where 条件字句] [group by 字句] [having 字句] [order by 字句] [limit 字句];
+
+其中 Select选项：对查出来的结果 的处理 方式
+	All：默认的，保留所有的结果
+	distinct: 去重(完全一样)
+
+select distinct * from my_copy; #重复的 就不要了
+
+#************************************************
+
+字段别名
+
+字段别名：当数据进行查询出来的时候，有时候名字并不一定满足需求（同名）；
+要进行别名 操作
+
+字段名 [as] 别名
+
+Insert into te_student values(2016001,'Mary','Female','14',1);
+
+desc te_student;
+
+select 
+id,
+StudentNumber as 学号,
+name as 姓名,
+gender as 性别,
+age from te_student;
+
+#********************************************
+
+数据源： 关系型 数据库的来源 都是 数据表： 
+数据源 分为  单表 数据源  多表 数据源  查询语句
+
+单表数据源：  select * from 表名;
+多表		select * from 表1,表2;
+
+select * from te_student,my_teacher;
+ 将一张表的一条记录，去匹配另一张表中的所有 记录，而且 都保留。
+ 像是 连线   。  这种结果 称为 笛卡尔积（交叉连接）.没用，应该避免。
+#**********************************************
+
+ #子查询：数据的来源 是一条 查询语句   介绍一下 后面还有 
+
+ Select * from (select * from my_student) as s;
+
+# ***********************************
+ Where 字句   
+ ：判断数据 筛选 数据。  0:False 1:True 没有布尔
+
+ 判断条件：
+ 
+比较运算符
+ 还有 like  between
+
+ 有区别的是 “=”  而不是“==” 
+逻辑运算符
+&& || ！
+
+where 原理：
+
+唯一一个从磁盘取数据的时候 就开始 
+判断 结果成立 进入内存 
+否则放弃
+
+-- 增加 修改 age 和 height 字段
+
+alter table te_student modify age tinyint unsigned;
+alter table te_student add height tinyint unsigned;
+
+select * from te_student;
+
+-- 添加值：rand取得0到1之间的随机数 ； 向下取整floor
+Insert into te_student values(2016002,'Jack','Male',50,2,NUll);
+
+Insert into te_student values(2016003,'Bob','Male',50,3,NUll);
+
+Insert into te_student values(2016004,'Lily','Female',50,4,NUll);
+
+Insert into te_student values(2016002,'John','Male',50,5,NUll);
+
+update te_student set age=floor(rand()*20+20),height=floor(rand()*20+170);
+
+#****************************************************
+-- 找学生id为1,3,5的学生 或运算
+
+select * from te_student where id in(1,2);
+select * from te_student where id =1||id=2;  -- 逻辑运算
+
+-- 查出区间 落在 身高180 190 区间 的学生 
+
+select * from te_student where height>=180 && height<=190;
+select * from te_student where height between 180 and 190;
+
+and 左边 小于 右边
+#*********************************************************
+ 
+ Group by 字句
+  分组的意思
+
+  基本语法：group by 字段
+
+  -- 根据 性别分组
+
+
+分组 为了统计
+
+统计函数
+
+Count()
+Max()
+Min()
+Avg()
+Sum()
+
+
+select gender,count(*),max(height),min(height),avg(age),sum(age) from te_student group by gender;
+
+
+-- 分组 统计： 身高  年龄。。
+-- 分组 是为了 统计  否则 没意义
+
+Count 函数： 可以用两种参数：* 代表统计记录，  字段名  也可以（NULL 不统计）
+
+-- 分组 会自动排序 根据分组字段： 默认升序
+
+Group by  字段[asc|desc]
+
+select gender,count(*),max(height),min(height),avg(age),sum(age) from te_student group by gender desc;
+
+
+-- 多字段 分组 先分  再分
+
+desc my_class;
+
+-- 取消主键
+
+alter table my_class drop primary key;
+
+
+-- 增加 id 字段 d带 主键
+
+alter table my_class add id int primary key auto_increment;
+
+select * from my_class;
+
+insert into my_class values('PHP0910','C957',NULL);
+
+
+-- 对 te_student  操作 一通  熟悉操作  
+
+# 查看
+desc te_student;
+
+select * from te_student;
+
+# 丢弃 id 字段
+alter table te_student drop id ;
+# 添加 新的 c_id 字段
+
+alter table te_student add c_id int;
+
+
+alter table te_student add id int primary key auto_increment;
+
+
+
+#ceil 向上取整
+update te_student set c_id=ceil(rand()*3);
+
+-- 多字段 分组：先分班级 后分 男女
+
+select c_id,gender,count(*) from te_student group by c_id,gender;
+
+#**********************************************
+
+有一个 函数 group_concat(字段): 可以对分组中的字符串 进行连接  显示 分完组 后 的组员信息
+select c_id,gender,count(*),group_concat(name) from te_student group by c_id,gender;
+
+#*******************************************
+
+回溯统计： with rollup： 任何一个分组 ，需要 向上级分组 进行 汇报统计，根据当前分组的字段
+
+回溯统计会将 分组 置空
+-- 比如
+
+select c_id,count(*) from te_student group by c_id;
+
+-- 回溯方式 多一条记录
+select c_id,count(*) from te_student group by c_id with rollup;
+
+-- 多字段 分组 回溯 统计
+select c_id,gender,count(*),group_concat(name) from te_student group by c_id,gender with rollup;
+
+-- 多字段 回溯 
+先 考虑 第一层 分组 会有一次 回溯 ，组数 多少 回溯 就是多少
+在加上 第一层 回溯
+
+#*******************************************
+Having 语句
+
+having 与 where 一样 条件判断
+不同点：
+
+Where 进行 磁盘 判断  进入 内存之后  分组操作 ： where 不能处理 分组结果
+所以需要having 来处理
+
+having 能做 where 能做的所有事情  反过来 where 却不行
+
+分组统计结果   只有having能处理
+
+-- 举例1
+
+--  求出每个班所有班级人数 大于等于2 的学生(分组 之后  新的条件)
+
+select c_id,count(*) from te_student group by c_id having count(*) >=2;
+
+-- 举例2
+-- having 可以使用字段别名    因为 别名 是 进入内存才产生的
+
+select c_id,count(*) as total from te_student group by c_id having total >=2;
+
+#模糊查询 j开头　的名字
+select name as 名字,gender as 性别 from te_student having 名字 like 'J%';
+
+ 
+ -- Order by
+
+Order by：排序，根据 某个字段 进行 排序  依赖 校对集
+
+Order by 字段名 [asc|desc]
+
+#group by 只取 第一个记录  order by 取 所有记录
+
+select * from te_student order by c_id;
+
+-- 多字段 排序 排了 再排
+
+-- 先 班级 后性别
+
+select * from te_student order by c_id,gender desc;
+
+-- limit 字句 
+
+限制 结果的字句
+
+limit 两种使用方式
+1， 限制长度（数据量）
+
+-- 举例  查 前两个学生
+select * from te_student limit 2;
+
+2， 限制起始位置  和 长度 。 从 指定 开始 往后找几个 数据；
+
+-- 举例 从 第一个数完 开始  找
+select * from te_student limit 1,2;
+
+#  应用 实现数据的 分页：为用户 节省时间，提高响应率 减少资源的浪费
+
+对用户 来讲：可以 分页的按钮
+对于 服务器 根据 用户 来获取  limit offset,length;
+
+length:每一页显示
+Offset:offset=(页码-1)*每页显示量
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 
 
 
