@@ -58,16 +58,62 @@ join
 -- 整个 算作一个 数据源
 select * from te_student cross join my_class;
 
--- 笛卡尔积 没有意义  尽量避免。  只是 为了保证  结构 的完整性。
+-- 笛卡尔积 没有意义  尽量避免。  只是 为了保证
+-- 结构 的完整性。
 
+-- 常用的 内连接
 
-
-
-
-
+内连接:[inner] join 左右表 匹配 ，必须有某个共同条件 ，才会保留结果。
+语法：
+左表 [inner] join 右表 on 条件 。条件 指 相同的业务含义
 
 
 -- 举例
+--c_id class_id  与 班级 id
+select * from te_student inner join my_class on te_student.c_id=my_class.id;
+
+用别名 去 区分 同名字段
+
+select s.*,c.name as c_name,c.room from te_student as s inner join my_class as c  -- 字段别名 ，表别名
+on s.c_id=c.id;
+
+#on 说明 on 后面 先执行
+# 如果数据里有null
+
+#另外 where 可以 替代 on （但是 where 没有 on 效率高）
+# 因为where 匹配 所有  on 只匹配 配对的
+
+#*******************
+# 外连接 outer join
+
+#取出某一张 的所有 记录 与另一张匹配 不管 能不能匹配 都保留结果。不能匹配，置空
+
+外连接 两种： 以  某张表 为主
+
+left join 左 外连接，以左表为主表
+右 相同
+
+语法： 左表 left/right join 右表
+
+-- 举例 左连接 左表 为主 最终数目 不少于 左表数目
+
+select s.*,c.name as c_name,c.room from te_student as s left join my_class as c
+on s.c_id=c.id;
+
+没有数据匹配上 都置为NULL，
+
+虽然有主副之分，左表数据 依然 在合表  的左边
+
+
+
+
+
+
+
+
+
+
+
 
 
 
