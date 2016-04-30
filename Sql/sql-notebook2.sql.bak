@@ -95,12 +95,66 @@ left join 左 外连接，以左表为主表
 
 语法： 左表 left/right join 右表
 
--- 举例 左连接 左表 为主
+-- 举例 左连接 左表 为主 最终数目 不少于 左表数目
 
 select s.*,c.name as c_name,c.room from te_student as s left join my_class as c
 on s.c_id=c.id;
 
-没有数据匹配上 都置为NULL
+没有数据匹配上 都置为NULL，
+
+虽然有主副之分，左表数据 依然 在合表  的左边
+
+#自然连接
+#自然连接：自动匹配条件：以字段名字做为（同名）
+
+自然连接：又分内外
+
+自然内连接 左表 natural join 右表
+
+select * from te_student natural join my_class;
+-- 没有匹配的
+
+#做修改
+#使用同名字段作为连接条件：连接之后 会合并 同名字段
+alter table my_class change name c_name varchar(20) not null;
+
+-- 自然左外连接
+select * from te_student natural left join my_class;
+
+-- 内连接 外连接 可以 模拟 自然连接  使用同名 字段，合并字段
+左表 left/right join 右表 using（字段）
+select * from te_student  left join my_class using(id);
+
+#*********************************************************
+PHP操作mysql
+本身无法操作，有扩展 可以操作mysql
+
+三种扩展 :mysql ,mysqli PDO扩展
+
+mysql扩展： 纯面向过程：里面都是 函数，可以调用函数。
+
+mysqli扩展：面向过程 +面向对象，有函数 也有类。
+
+PDO扩展：纯 面向 类  加载后 只能调用类。
+
+#用第一种
+
+#PHP操作 mysql
+流程：连接流程：连接 和认证
+数据库 连接 资源 ：Mysql_connect(服务器地址包含端口，用户名 ，密码)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
