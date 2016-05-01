@@ -14,3 +14,5 @@
 
 	$link3=mysqli_connect('localhost:3306','root','503503'£¬ture);
 	var_dump($link3);
+
+	...
