@@ -197,6 +197,9 @@ echo $id?$id :mysql_affected_rows();
 
 */
 
+/*
+
+
 //读操作
 
 //从数据库中查出数据，在html 显示
@@ -218,11 +221,31 @@ while($row=mysql_fetch_assoc($res)){
 include_once 'mysql_display.html';
 
 	//显示数据
+	// 在html 里面 写函数 foreach 循环
 
-
+*/
    
 
+ 也可以 在html 里面写mysql调用
 
+
+#创建一个html 来显示
+
+
+	//查询操作
+$sql="select * from te_student";
+$res=my_error($sql);
+	
+	//结果集 写到 html 中去
+	
+
+}
+
+	//显示结果
+include_once 'mysql_display.html';
+
+	//显示数据
+	// 在html 里面 写函数 foreach 循环
 
 
 

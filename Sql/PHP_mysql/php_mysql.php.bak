@@ -106,7 +106,7 @@ Mixed Mysql_query(sql指令)
 
 # @ 抑制错误的符号 有错 就不报了
 
- header('Content-type:text/html;charset=gbk');
+ header('Content-type:text/html;charset=utf-8');
  $link=@mysql_connect('localhost','root','503503');
 #判断结果
 
@@ -163,12 +163,61 @@ function my_error($sql){
 	return $res;
 }
 
-#任何SQL语句 的执行 都可以用上面自定义来做
+#任何SQL语句 的执行 都可以用上面自定义的函数 my_error 来做
 
-$sql="use teswt2";
+$sql="use test2";
 my_error($sql);
 
+/*
 
+//新增数据
+
+$sql="insert into te_student values(6,2016006,'Kate','Female',27,167,2)";
+my_error($sql);
+
+//获取自增长id
+$id= mysql_insert_id();
+//如果id为0：说明没有自增长 受影响 为0
+echo $id?$id :mysql_affected_rows();
+
+
+*/
+
+/*
+
+
+//改数据
+
+$sql="update te_student set age=floor(rand()*20+20) ";
+my_error($sql);
+$id= mysql_insert_id();
+#通过受影响的函数来判断数据
+echo $id?$id :mysql_affected_rows();
+
+
+*/
+
+//读操作
+
+//从数据库中查出数据，在html 显示
+
+#创建一个html 来显示
+
+
+	//查询操作
+$sql="select * from te_student";
+$res=my_error($sql);
+
+	//解析结果集
+$student=array();
+while($row=mysql_fetch_assoc($res)){
+	$students[]=$row;
+}
+
+	//显示结果
+include_once 'mysql_display.html';
+
+   
 
 
 
