@@ -197,7 +197,12 @@ echo $id?$id :mysql_affected_rows();
 
 */
 
-//读操作
+
+
+
+/*  
+
+//读操作  方法一
 
 //从数据库中查出数据，在html 显示
 
@@ -217,11 +222,35 @@ while($row=mysql_fetch_assoc($res)){
 	//显示结果
 include_once 'mysql_display.html';
 
-   
+	//显示数据
 
 
+   */
 
 
+   //读操作  方法二  不常用  因为 html一般只负责 显示 数据 不应该去处理数据。
+
+//从数据库中查出数据，在html 显示
+
+#创建一个html 来显示
 
 
+	//查询操作
+$sql="select * from te_student";
+$res=my_error($sql);
 
+
+#不要解析结果集
+/*
+	//解析结果集
+$student=array();
+while($row=mysql_fetch_assoc($res)){
+	$students[]=$row;
+}
+*/
+
+
+	//显示结果
+include_once 'mysql_display2.html';
+
+	//显示数据
