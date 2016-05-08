@@ -146,10 +146,90 @@ PDO扩展：纯 面向 类  加载后 只能调用类。
 转www文件夹下，PHP文件-用PHP控制mysql
 
 
+#*****************************************************#*****************************************************
+#*****************************************************#*****************************************************
+#*****************************************************#*****************************************************
+
+#mysql 学习 第五天 视频
+
+回顾
+
+连接查询：多张表连接到一起   
+	内 外 自然 交叉
+	
+	交叉：笛卡尔 没用
+	内连接：inner join，必须左右两张表 有连接匹配
+	外连接：outer[left/right] join,主表有的记录，一定保留。副表没匹配到的NULL
+	自然连接： natural join 自动匹配 （相同的字段名，数据会错），using关键字 模拟 自然连接
+
+PHP操作 mysql
+	PHP充当客户端，开启mysql扩展
+	连接认证：mysql_connect; 发送SQL获取结果：mysql_query;解析结果集：mysql_fetch系列;释放资源 ：
+	mysql_free_result 和 mysql_close
+	错误处理：mysql_errno 和 mysql_error
 
 
+#*****************************************************#*****************************************************
+
+外键：foreign key；(键不在自己表中)：如果一张表中有一个字段（非主键）指向
+另外一张表的逐渐，那么称该字段为外键。
 
 
+一张表可以有多个外键
+
+增加外键：外键可以在创建表 或 之后 增加。
+
+1.创建表的时候增加外键：在字段之后 使用foreign key（外键字段）references 外部表
+（主键字段）
+
+
+desc my_class; 
+
+-- 创建外键
+
+create table my_foreign1(
+id int primary key auto_increment,
+name varchar(20) not null comment '学生姓名',
+c_id int comment '班级id',
+
+foreign key(c_id) references my_class(id)
+)charset utf8;
+
+
+2.在新增表之后增加外键：
+Alter table 表名 add[constraint 外键名字] foreign key(外键字段) references 父表(主键字段);
+
+
+-- 先创建表
+
+create table my_foreign2(
+id int primary key auto_increment,
+name varchar(20) not null comment '学生姓名',
+c_id int comment '班级id'
+)charset utf8;
+
+-- 增加外键
+alter table my_foreign2 add
+-- 指定外键名
+constraint student_class_1
+-- 指定外键字段
+foreign key(c_id) 
+-- 引用父表主键
+references my_class(id);
+
+desc my_foreign2; 
+
+-- 修改外键& 删除外键
+
+外键不可修改：只能 先删除 在 增加
+
+alter table my_foreign2 drop foreign key 外键名;  -- 一张表中的外键 名字不能相同
+
+
+alter table my_foreign1 drop foreign key my_foreign1_ibfk_1;
+
+desc my_foreign1;  -- 查看的时候 还是没删(表结构 看不出来 )  实际 删了 从创建语句看出
+show create table my_foreign1;
 
 
 

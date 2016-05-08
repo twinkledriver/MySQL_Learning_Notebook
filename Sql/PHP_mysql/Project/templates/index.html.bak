@@ -34,9 +34,19 @@
 			<td><?php echo $v['c_id'];?></td>
 			<td><?php echo $v['c_name'];?></td>
 			<td><a href="" >编辑</a>|<a href="">删除</a> </td>
-
 		</tr>
 	<?php endforeach;?>
+		<tr>
+			<td colspan="9" align="center">
+				<a href="index.php?page=1">首页</a>
+				<a href="index.php?page=?">上一页</a>
+				<a href="index.php?page=?">下一页</a>
+				<a href="index.php?page=?">尾页</a>
+			</td>
+		</tr>
+
+
+
 
 
 	</table>
