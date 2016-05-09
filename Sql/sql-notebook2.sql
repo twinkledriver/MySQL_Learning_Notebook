@@ -231,6 +231,61 @@ alter table my_foreign1 drop foreign key my_foreign1_ibfk_1;
 desc my_foreign1;  -- 查看的时候 还是没删(表结构 看不出来 )  实际 删了 从创建语句看出
 show create table my_foreign1;
 
+#*********************************************************************
+
+外键作用
+
+外键默认作用有两点：一个对父表，一个对子表（外键字段所在的表）
+
+对子表约束：子表数据进行写操作的时候，如果对应的外键字段在父表找不到对应的匹配：
+那么操作会失败。（约束子表的写操作）
+
+-- 插入数据：外键字段在父表中不存在
+insert into my_foreign2 values(null,'Zack',4); -- 其实并不存在 班级4 这里会失败；
+
+-- 对父表的约束：父表数据进行写操作（删和改：涉及主键本身,如果对应的主键在子表
+-- 中已经被数据所引用，那么就不允许操作。相当于数据之间已经有了绑定，就不能单一的
+-- 改变了。
+
+insert into my_foreign2 values(null,'Zack',1);
+insert into my_foreign2 values(null,'Tony',2);
+insert into my_foreign2 values(null,'ken',2);
+
+select * from my_foreign2;
+
+update my_foreign2 set name='Ken' where name='ken';
+
+-- 若要更新父表记录
+update my_class set id = 4 where id = 1; -- 失败: id=1 记录已经被学生给用了。不能再修改了
+update my_class set id = 4 where id = 3; -- 成功：没有用过id=3；
+
+
+#*******************************************************
+ 外键条件
+ 1.外键要存在，首先要保证 存储引擎是 innodb(默认)。如果不是innodb，外键
+   可以创建成功，但是没有约束效果。
+ 2.外键字段的字段类型（列类型）必须要与父表的主键类型一致。
+ 3.一张表中外键名字不能重复。
+ 4.增加外键的字段（数据已经存在），必须保证数据与父表主键要求对应。 
+
+-- 插入数据
+insert into my_foreign1 values(null,'Leo',3);
+-- 增加外键
+alter table my_foreign1 add foreign key(c_id) references my_class(id);
+
+#*******************************************************
+ 外键约束
+
+ 外键作用：是默认的。其实可以根据需求，进行定制操作；
+
+ 外键约束有三种约束模式：针对父表的约束
+	District：严格模式，父表不能删除或者更新一个已经被子表数据引用的记录。
+	Cascade:级联模式，父表操作 子表关联的数据也跟着操作。
+	Set null：置空模式，父表操作之后，子表对应的数据 被置空。
+
+
+
+
 
 
 
