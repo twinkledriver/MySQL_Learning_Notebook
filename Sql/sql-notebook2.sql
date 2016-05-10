@@ -283,6 +283,59 @@ alter table my_foreign1 add foreign key(c_id) references my_class(id);
 	Cascade:级联模式，父表操作 子表关联的数据也跟着操作。
 	Set null：置空模式，父表操作之后，子表对应的数据 被置空。
 
+通常的合理做法（约束模式）：
+
+删除的时候 子表置空，
+更新的时候子表级联操作，
+
+指定模式的语法：
+ foreign key(外键字段) references 父表(主键字段) on delete 模式 update 模式;
+
+ foreign key(外键字段) references 父表(主键字段) on delete set null update cascade;
+
+ -- 创建外键:指定模式:删除置空，更新级联
+
+ create table my_foreign3(
+ id int primary key auto_increment,
+ name varchar(20) not null,
+ c_id int,
+ -- 增加外键
+ foreign key(c_id) references my_class(id) on delete set null on update cascade
+ )charset utf8;
+
+show create table my_foreign3;
+
+-- 插入数据
+
+insert into my_foreign3 values(null,'刘备',1),(null,'曹操',1),(null,'孙权',1),(null,'诸葛亮',2),(null,'周瑜',2);
+
+select * from my_foreign3;
+select * from my_class;
+
+-- 删除foreign2中的 外键(之前有绑定)
+alter table my_foreign2 drop foreign key student_class_1;
+
+-- 更新 副表 主键
+
+update my_class set id=3 where id=1;
+
+-- 此时原来foreign3 中所有的1 班 都变成3 班 （级联影响）
+
+-- 删除操作  删除父表主键
+
+delete from my_class where id = 2;
+
+-- 此时 foreign3 中3 班 都变成null
+
+-- 前提条件 外键字段必须允许为空（ 外键无法创建）
+
+-- 外键能够进行 各种约束 但是对PHP来讲 ，更难可控了
+
+-- 实际开发中 很少使用外键
+ 
+
+
+
 
 
 

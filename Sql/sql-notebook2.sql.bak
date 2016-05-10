@@ -279,8 +279,9 @@ alter table my_foreign1 add foreign key(c_id) references my_class(id);
  外键作用：是默认的。其实可以根据需求，进行定制操作；
 
  外键约束有三种约束模式：针对父表的约束
-  
-
+	District：严格模式，父表不能删除或者更新一个已经被子表数据引用的记录。
+	Cascade:级联模式，父表操作 子表关联的数据也跟着操作。
+	Set null：置空模式，父表操作之后，子表对应的数据 被置空。
 
 
 

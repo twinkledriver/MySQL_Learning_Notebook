@@ -146,7 +146,222 @@ PDO扩展：纯 面向 类  加载后 只能调用类。
 转www文件夹下，PHP文件-用PHP控制mysql
 
 
+#*****************************************************#*****************************************************
+#*****************************************************#*****************************************************
+#*****************************************************#*****************************************************
 
+#mysql 学习 第五天 视频
+
+回顾
+
+连接查询：多张表连接到一起   
+	内 外 自然 交叉
+	
+	交叉：笛卡尔 没用
+	内连接：inner join，必须左右两张表 有连接匹配
+	外连接：outer[left/right] join,主表有的记录，一定保留。副表没匹配到的NULL
+	自然连接： natural join 自动匹配 （相同的字段名，数据会错），using关键字 模拟 自然连接
+
+PHP操作 mysql
+	PHP充当客户端，开启mysql扩展
+	连接认证：mysql_connect; 发送SQL获取结果：mysql_query;解析结果集：mysql_fetch系列;释放资源 ：
+	mysql_free_result 和 mysql_close
+	错误处理：mysql_errno 和 mysql_error
+
+
+#*****************************************************#*****************************************************
+
+外键：foreign key；(键不在自己表中)：如果一张表中有一个字段（非主键）指向
+另外一张表的逐渐，那么称该字段为外键。
+
+
+一张表可以有多个外键
+
+增加外键：外键可以在创建表 或 之后 增加。
+
+1.创建表的时候增加外键：在字段之后 使用foreign key（外键字段）references 外部表
+（主键字段）
+
+
+desc my_class; 
+
+-- 创建外键
+
+create table my_foreign1(
+id int primary key auto_increment,
+name varchar(20) not null comment '学生姓名',
+c_id int comment '班级id',
+
+foreign key(c_id) references my_class(id)
+)charset utf8;
+
+
+2.在新增表之后增加外键：
+Alter table 表名 add[constraint 外键名字] foreign key(外键字段) references 父表(主键字段);
+
+
+-- 先创建表
+
+create table my_foreign2(
+id int primary key auto_increment,
+name varchar(20) not null comment '学生姓名',
+c_id int comment '班级id'
+)charset utf8;
+
+-- 增加外键
+alter table my_foreign2 add
+-- 指定外键名
+constraint student_class_1
+-- 指定外键字段
+foreign key(c_id) 
+-- 引用父表主键
+references my_class(id);
+
+desc my_foreign2; 
+
+-- 修改外键& 删除外键
+
+外键不可修改：只能 先删除 在 增加
+
+alter table my_foreign2 drop foreign key 外键名;  -- 一张表中的外键 名字不能相同
+
+
+alter table my_foreign1 drop foreign key my_foreign1_ibfk_1;
+
+desc my_foreign1;  -- 查看的时候 还是没删(表结构 看不出来 )  实际 删了 从创建语句看出
+show create table my_foreign1;
+
+#*********************************************************************
+
+外键作用
+
+外键默认作用有两点：一个对父表，一个对子表（外键字段所在的表）
+
+对子表约束：子表数据进行写操作的时候，如果对应的外键字段在父表找不到对应的匹配：
+那么操作会失败。（约束子表的写操作）
+
+-- 插入数据：外键字段在父表中不存在
+insert into my_foreign2 values(null,'Zack',4); -- 其实并不存在 班级4 这里会失败；
+
+-- 对父表的约束：父表数据进行写操作（删和改：涉及主键本身,如果对应的主键在子表
+-- 中已经被数据所引用，那么就不允许操作。相当于数据之间已经有了绑定，就不能单一的
+-- 改变了。
+
+insert into my_foreign2 values(null,'Zack',1);
+insert into my_foreign2 values(null,'Tony',2);
+insert into my_foreign2 values(null,'ken',2);
+
+select * from my_foreign2;
+
+update my_foreign2 set name='Ken' where name='ken';
+
+-- 若要更新父表记录
+update my_class set id = 4 where id = 1; -- 失败: id=1 记录已经被学生给用了。不能再修改了
+update my_class set id = 4 where id = 3; -- 成功：没有用过id=3；
+
+
+#*******************************************************
+ 外键条件
+ 1.外键要存在，首先要保证 存储引擎是 innodb(默认)。如果不是innodb，外键
+   可以创建成功，但是没有约束效果。
+ 2.外键字段的字段类型（列类型）必须要与父表的主键类型一致。
+ 3.一张表中外键名字不能重复。
+ 4.增加外键的字段（数据已经存在），必须保证数据与父表主键要求对应。 
+
+-- 插入数据
+insert into my_foreign1 values(null,'Leo',3);
+-- 增加外键
+alter table my_foreign1 add foreign key(c_id) references my_class(id);
+
+#*******************************************************
+ 外键约束
+
+ 外键作用：是默认的。其实可以根据需求，进行定制操作；
+
+ 外键约束有三种约束模式：针对父表的约束
+	District：严格模式，父表不能删除或者更新一个已经被子表数据引用的记录。
+	Cascade:级联模式，父表操作 子表关联的数据也跟着操作。
+	Set null：置空模式，父表操作之后，子表对应的数据 被置空。
+
+通常的合理做法（约束模式）：
+
+删除的时候 子表置空，
+更新的时候子表级联操作，
+
+指定模式的语法：
+ foreign key(外键字段) references 父表(主键字段) on delete 模式 update 模式;
+
+ foreign key(外键字段) references 父表(主键字段) on delete set null update cascade;
+
+ -- 创建外键:指定模式:删除置空，更新级联
+
+ create table my_foreign3(
+ id int primary key auto_increment,
+ name varchar(20) not null,
+ c_id int,
+ -- 增加外键
+ foreign key(c_id) references my_class(id) on delete set null on update cascade
+ )charset utf8;
+
+show create table my_foreign3;
+
+-- 插入数据
+
+insert into my_foreign3 values(null,'刘备',1),(null,'曹操',1),(null,'孙权',1),(null,'诸葛亮',2),(null,'周瑜',2);
+
+select * from my_foreign3;
+select * from my_class;
+
+-- 删除foreign2中的 外键(之前有绑定)
+alter table my_foreign2 drop foreign key student_class_1;
+
+-- 更新 副表 主键
+
+update my_class set id=3 where id=1;
+
+-- 此时原来foreign3 中所有的1 班 都变成3 班 （级联影响）
+
+-- 删除操作  删除父表主键
+
+delete from my_class where id = 2;
+
+-- 此时 foreign3 中3 班 都变成null
+
+-- 前提条件 外键字段必须允许为空（ 外键无法创建）
+
+-- 外键能够进行 各种约束 但是对PHP来讲 ，更难可控了
+
+-- 实际开发中 很少使用外键
+
+
+#**********************************************#**************************
+ #**********************************************#**************************
+
+ 联合查询
+
+联合查询：将多次查询，在记录上进行拼接（但是 字段不会增加）
+
+基本语法：
+
+多条select ：每一条 获取的字段数 必须严格一致（与字段类型无关）   行列 对齐
+
+select 语句1 Union[选项] select 语句2
+
+union选项：all ：保留所有  distinct  ：去重（默认）
+
+
+select * from my_class
+union  -- 默认去重
+select * from my_class;
+
+
+select * from my_class
+union  all 
+select * from my_class;
+
+-- 意义
+-- 1.查同一张表 需求不同：如 查询 学生信息   ，男生身高升序  女生 身高降序
+-- 2. 多表查询  结构一样  完全一样
 
 
 
