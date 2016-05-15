@@ -472,6 +472,55 @@ select * from te_student where
 (age,height)=( select max(age),max(height) from te_student); 
 
 
+#********************************************
+
+--  表子查询
+
+表子查询：子查询返回的是 多行多列 的二维表：子查询 返回的结果是当作二维表来使用
+
+-- 需求： 找出每一个班最高的一个学生
+
+1.确定数据源:现将学生 按照身高 进行降序排序
+select * from te_student order by height desc;
+2.从里面选出第一个学生
+select * te_student group by c_id; -- 选出第一个
+
+表 子查询 归结为 :from 子查询  ：从得到的结果作为from的数据源
+
+-- 表子查询
+注意一下两种写法的区别：
+
+select * from te_student group by c_id order by height desc; -- 先按id分组取学生 再按照身高排
+
+-- 实质 是构建表
+select * from (select * from te_student order by height desc) as student group by c_id;  --  找每个班 最高的。 注意 as 后面必须加  因为from后 智能跟表名
+ 
+-- 这里与视频 不同 ，似乎是版本的原因 group by 用不了.
+
+#********************************************
+--  exists子查询
+
+Exsits：存在：判断某些条件是否满足（跨表）,接在where之后：返回结果 只有0和1；
+
+select exists(select * from te_student where id=100);
+
+需求：查询所有 班级存在的学生；
+
+-- 数据源
+
+select * from te_student where ?;
+
+-- 确定条件是否满足
+
+exists(select * from my_class); --  是否成立
+
+
+-- 结合
+
+select * from te_student where exists(select * from my_class); 
+
+
+ 
  
 
 

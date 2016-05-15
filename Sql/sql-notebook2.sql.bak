@@ -385,15 +385,120 @@ union
 union
 (select * from te_student where gender='Female' order by age desc limit 9999);
 
+#**********************************************#**************************
+ #**********************************************#**************************
+
+ 子查询：结果中 在查询
+
+子查询：sub query,在某个条件下  新的条件排序
+
+分类：
+
+按位置 分类：子查询（select 语句）在外部查询 中出现了 位置。
+			from 子查询：from后
+			where子查询：where 条件中
+			exists 子查询：exists里
+		
+按结果分：根据子查询得到的数据进行分类
+		标量子查询：子查询得到的结果是一行一列
+		列子查询：一列多行
+		行子查询：多列一行（多行多列）
+		表子查询：得到的结果是多行多列（from之后）
+
+标量子查询：
+
+-- 需求：知道班级名字为PHP0710 想获取该班的所有学生
+
+#********************************************
+-- 标量子查询
+1.确定数据源：获取所有的学生
+ select * from te_student where c_id=？;
+
+ 2.获取班级ID：可以通过班级名字确定
+
+select id from my_class where c_name='PHP0710';
+
+-- 组合1,2 括号
+ select * from te_student where c_id=(select id from my_class where c_name='PHP0710');
+
+ 
+ select * from my_class;
+desc my_class;
+#********************************************
+--  列子查询
+
+-- 先增加点数据
+
+insert into my_class values(1,'PHP1027','A206');
+
+-- 需求 查询所有在读班级的学生（班级表中存在的班级）
+
+-- 数据源：学生
+select * from te_student where c_id in(?);
+-- 有效班级的id
+select id from my_class;
+
+--列子查询
+
+select * from te_student where c_id in(select id from my_class);
+
+-- 一列 多行 用in作为条件匹配 几个类似 all some  any 
+
+#********************************************
+--  行子查询
+
+
+-- 需求：要求查出整个学生中，年龄最大且身高最高的学生。
+
+-- 数据源：学生
+select * from te_student where age=? And height=?; --  此处不能用where, 用max没进入内存,where 改成having
 
 
 
+-- 最大年龄 且 最高身高
+select max(age) from te_student
+
+select max(height) from te_student
 
 
+-- 组合 虽然可以 但是不符合
+select * from te_student where age=(select max(age) from te_student) And height=(select max(height) from te_student);
+
+-- 实际上要构造行元素
 
 
+select * from te_student where
+-- （age,height)称之为 行元素
+(age,height)=( select max(age),max(height) from te_student); 
 
 
+#********************************************
+
+--  表子查询
+
+表子查询：子查询返回的是 多行多列 的二维表：子查询 返回的结果是当作二维表来使用
+
+-- 需求： 找出每一个班最高的一个学生
+
+1.确定数据源:现将学生 按照身高 进行降序排序
+select * from te_student order by height desc;
+2.从里面选出第一个学生
+select * te_student group by c_id; -- 选出第一个
+
+表 子查询 归结为 :from 子查询  ：从得到的结果作为from的数据源
+
+-- 表子查询
+注意一下两种写法的区别：
+
+select * from te_student group by c_id order by height desc; -- 先按id分组取学生 再按照身高排
+
+-- 实质 是构建表
+select * from (select * from te_student order by height desc) as student group by c_id;  --  找每个班 最高的。 注意 as 后面必须加  因为from后 智能跟表名
+ 
+-- 这里与视频 不同 ，似乎是版本的原因 group by 用不了.
+
+ 
+ 
 
 
 
