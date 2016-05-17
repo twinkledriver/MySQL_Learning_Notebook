@@ -519,31 +519,112 @@ exists(select * from my_class); --  是否成立
 
 select * from te_student where exists(select * from my_class); 
 
+#********************************************
+--  视图
 
+视图：view：虚拟表
+
+创建视图
+基本语法：
+create view 视图 as select 语句;-- select 语句可以是普通查询;可以是连接查询 ;可以是联合查询; 
+
+创建 单表 视图：
+create view my_v1 as select * from te_student;
+
+create view my_v2 as select * from my_class;
+
+创建 多表 的 不能有 重名字段
+create view my_v3 as select * from te_student as s left join my_class as c on s.c_id=c.id;  -- 创建不了 id 重名
+
+create view my_v3 as select s.*,c.c_name,c.room from te_student as s left join my_class as c on s.c_id=c.id; 
+
+
+
+-- 查看视图：查看视图结构
+
+视图是一张虚拟表： 表的所有查看 方式 都使用于视图
+
+-- 修改视图
+修改视图：修改视图本身的来源（select语句）
+
+Alter view  名字 as  新的 select 语句。
+
+例如
+alter view my_v1 as select id,name,age,gender,height,c_id from te_student;
+
+alter view my_v3 as select id,name,age,gender,height,c_id from te_student;
+-- 删除 视图
  
- 
+ create view my_v4 as select * from te_student;
+
+ -- 删除
+
+ drop view my_v4;
+
+ -- 使用视图 主要是为了查询
+
+ desc my_v1;
 
 
+视图的本质：就是 执行封装了的select 语句.
 
 
+视图的意义：
+1.视图可以节省SQL语句：将一条复杂的查询语句使用视图 进行保存L以后对视图进行操作。
+2.数据安全  对视图 处理  不会影响基表。
+3.视图往往在大项目中使用，而且 多系统使用：可以只提供部分字段。隐藏关键的数据。数据安全。
+4.对外友好型，好像 专门设计的
+5.视图 更好的进行 权限控制
+
+-- 视图数据操作
+
+视图 可以 进行数据 写操作：但是有很多限制
+
+-- 多表视图新增数据
+insert into my_v3 values(null,'2016007','Zacker','Male',90,180,1,'PHP0326','D306');
+-- 结果 是不能插入(多表)
+
+--试试 单表： 也有前提：视图中包含的数据 必须有基表中所有不能为空（或者没有默认值 ）的子啊U单
+insert into my_v1 values(7,'Zacker',90,'Male',180,1);
+insert into my_v1 values(null,'Dog',20,'Male',130,1);
+
+-- 视图 是可以 直接 像基表 插入 数据的
 
 
+删除数据
+
+多表视图 不能删除
+
+delete from my_v3 where id=1;
+
+单表可以删
+
+-- 更新数据 单表 多表 都可以
+
+update my_v3 set c_id =3
+
+-- 可以 搞成 限制跟新
+create view my_v4 as select * from te_student  where age > 30 whith check option;
+-- 表示 视图的 数据来源 都是 年龄 大于30岁的： 更新的 时候 不能更改 此部分 的数据
+
+-- 视图 算法
+
+系统对 视图以及外部查询视图 的select语句的 一种解析方式
+
+视图算法 有三种：
+	undefined:未定义  不是 实际使用 推卸责任  
+	temptable: 临时表 算法 系统 先执行 视图 的select 语句 后 执行 外部查询语句
+	Merge  合并算法  视图 先将  视图对应 的 和  外部查询  的 合并 在 执行（效率高： 常态）
+
+算法指定： 创建视图的时候
+
+create algorithm=指定算法 view 
 
 
+--  指定 算法 为临时表
+create  algorithm=temptable view  my_v6 as select * from te_student order by height desc;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+ select * from my_v6 group by c_id;
 
 
 
