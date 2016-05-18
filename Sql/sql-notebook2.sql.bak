@@ -597,26 +597,93 @@ insert into my_v1 values(null,'Dog',20,'Male',130,1);
 
 delete from my_v3 where id=1;
 
+单表可以删
+
+-- 更新数据 单表 多表 都可以
+
+update my_v3 set c_id =3
+
+-- 可以 搞成 限制跟新
+create view my_v4 as select * from te_student  where age > 30 whith check option;
+-- 表示 视图的 数据来源 都是 年龄 大于30岁的： 更新的 时候 不能更改 此部分 的数据
+
+-- 视图 算法
+
+系统对 视图以及外部查询视图 的select语句的 一种解析方式
+
+视图算法 有三种：
+	undefined:未定义  不是 实际使用 推卸责任  
+	temptable: 临时表 算法 系统 先执行 视图 的select 语句 后 执行 外部查询语句
+	Merge  合并算法  视图 先将  视图对应 的 和  外部查询  的 合并 在 执行（效率高： 常态）
+
+算法指定： 创建视图的时候
+
+create algorithm=指定算法 view 
 
 
+--  指定 算法 为临时表
+create  algorithm=temptable view  my_v6 as select * from te_student order by height desc;
+
+ select * from my_v6 group by c_id;
+
+ -- 数据 备份 与还原
+
+1.数据表备份
+2单表数据备份
+3SQL备份 
+4增量备份
+
+数据库备份
+不需要 SQL备份 直接复制 文件夹 复制 数据文件。前提条件：存储引擎
 
 
+存储引擎：mysql进行数据存储的方式 主要是 两种  innodb 和 myisam（免费）
 
 
+查看 版本
+select @@version
+
+myisam：1 批量插入 速度快 2   只支持B树索引 3 空间使用 和内存使用 都低 4不支持外键
+innodb ：1 批量插入 速度慢 2  支持 各种索引  3 空间使用 和内存使用 都高 (不好)  4支持外键
+其他引擎 收费
+
+innodb：只有表结构  数据 全部 都在 ibdata1 文件中。跨库 不能识别 只能拷贝结构 
+mysiam： 表 数据 索引  全部单独 存储 适合备份  直接拷贝3个文件。
 
 
+--2单表数据备份
+ select * into outfile 路径 from 数据源;
+
+ -- 高级备份 或者说输出
+
+Terminated by 以 什么结束 “ \t” tab键
+
+ fields：字段处理
+	Enclosed by  以 什么包裹 默认 ""
+	Terminated by 以 什么结束 “ \t” tab键
+	Escaped by 特殊 符号处理  "\\" 反斜杠转移
+
+lines：行处理
+	starting by: 每行 以什么开始 默认 “”
+	Terminated by 以 什么结束 “ \r\n”  换行键
 
 
+-- 举例
+
+ select * into outfile 'D:\class2.txt' 
+ fields 
+ enclosed by '"' -- 双引号 包裹
+ terminated by '|'
+lines 
+starting by 'START:'
+terminated by '\r\n'
+ from my_class;
 
 
+delete from my_class;
+ -- 数据还原:讲一个 外部保存的数据 重新 回复
 
-
-
-
-
-
-
-
+ Load data infile  路径 into table 表名 fields    lines    -- 怎么备份 怎么还原
 
 
 

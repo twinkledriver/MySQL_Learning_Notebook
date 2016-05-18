@@ -626,7 +626,76 @@ create  algorithm=temptable view  my_v6 as select * from te_student order by hei
 
  select * from my_v6 group by c_id;
 
+ -- 数据 备份 与还原
 
+1.数据表备份
+2单表数据备份
+3SQL备份 
+4增量备份
+
+数据库备份
+不需要 SQL备份 直接复制 文件夹 复制 数据文件。前提条件：存储引擎
+
+
+存储引擎：mysql进行数据存储的方式 主要是 两种  innodb 和 myisam（免费）
+
+
+查看 版本
+select @@version
+
+myisam：1 批量插入 速度快 2   只支持B树索引 3 空间使用 和内存使用 都低 4不支持外键
+innodb ：1 批量插入 速度慢 2  支持 各种索引  3 空间使用 和内存使用 都高 (不好)  4支持外键
+其他引擎 收费
+
+innodb：只有表结构  数据 全部 都在 ibdata1 文件中。跨库 不能识别 只能拷贝结构 
+mysiam： 表 数据 索引  全部单独 存储 适合备份  直接拷贝3个文件。
+
+
+--2单表数据备份
+ select * into outfile 路径 from 数据源;
+
+ -- 高级备份 或者说输出
+
+Terminated by 以 什么结束 “ \t” tab键
+
+ fields：字段处理
+	Enclosed by  以 什么包裹 默认 ""
+	Terminated by 以 什么结束 “ \t” tab键
+	Escaped by 特殊 符号处理  "\\" 反斜杠转移
+
+lines：行处理
+	starting by: 每行 以什么开始 默认 “”
+	Terminated by 以 什么结束 “ \r\n”  换行键
+
+
+-- 举例
+
+ select * into outfile 'D:\class2.txt' 
+ fields 
+ enclosed by '"' -- 双引号 包裹
+ terminated by '|'
+lines 
+starting by 'START:'
+terminated by '\r\n'
+ from my_class;
+
+
+delete from my_class;
+ -- 数据还原:讲一个 外部保存的数据 重新 回复
+
+ Load data infile  路径 into table 表名 fields    lines    -- 怎么备份 怎么还原
+
+
+
+ -- SQL 备份  访问量 小
+
+ 备份的是 SQL 语句：（主要针对 表结构）
+
+ 备份：mysql 并 没有 提供备份 的指令 需要利用mysql 提供的软件  mysqldump.exe
+
+ 也是一种客户端  必须 操作 服务器   必须连接 认证
+
+ mysqldump -hPup 数据库名字   数据表 1 
 
 
 
