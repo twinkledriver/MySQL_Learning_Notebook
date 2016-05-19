@@ -695,17 +695,201 @@ delete from my_class;
 
  也是一种客户端  必须 操作 服务器   必须连接 认证
 
- mysqldump -hPup 数据库名字   数据表 1 
+
+-- 语法
+ mysqldump -hPup 数据库名字  [ 数据表名字1 数据表名字2...]>外部文件目录(建议 以.sql结尾)
+
+-- SQL 备份 单表备份
+mysqldump -uroot -p503503 test2 te_student > D:/student.sql
+
+-- 整库备份
+mysqldump -uroot -p503503 test2 >D:/test2.sql
+
+-- 数据库还原
+-- 方案一
+Mysql.exe -hPup 数据库名字 <备份文件目录
+
+--  如
+mysql -uroot -p503503 test2 <D:/test2.sql
+
+
+--方案二 使用SQL指令还原
+
+source D:/test2.sql 
+
+SQL备份优点
+1.有点：可以备份结构
+2.缺点：会浪费空间（额外增加 SQL指令）
+
+-- 增量备份
+
+增量备份：指定时间段 开始备份，备份数据不会重复，所有操作都会备份（大项目都用增量备份）
+
+
+#****************************************************#****************************************************
+#****************************************************#****************************************************
+#****************************************************#****************************************************
+第六天
+
+回顾
+
+外键：表与表 关联关系  表中字段 指向 另外一张表 的主键
+	条件：字段类型一致，存储引擎 为 innodb
+	 外键约束：
+		子表约束 父表约束
+
+联合查询：union 多表合并 单表 不同查询条件
+
+	使用 order by：select语句 使用括号，配合limit
+
+
+子查询：查询语句中有查询语句
+	分类：按位置（from where exists） 按 返回结果
+
+视图;view
+	节省SQL语句 安全控制
+	视图本质：虚拟表，有结构 无数据
+	视图数据操作
+	视图算法：undefined  temptable merge
+
+文件备份与还原
+	文件备份：存储引擎（myisam适用）
+	单表数据备份：只能备份数据
+	SQL备份（mysqldump.exe）
+	增量备份：备份系统日志文件
+
+#****************************************************#****************************************************
+事务
+
+需求：有一张银行账户表，有A用户给B用户转账：A账户增加，B用户减少。但是A操作完后
+断电了。
+
+解决方案：A减少钱，但是不要立即修改数据表，B收到钱之后，同时修改数据表。
+
+事务安全
+
+transaction
+事务：一系列要发生的连续的操作
+事务安全：保护连续操作 同时满足的 机制
+意义：保证数据操作的完整性
+
+--   创建一个账户表
+
+create table my_account(
+number char(16) not null unique comment '账户',
+name varchar(20) not null,
+money decimal(10,2) default 0.0 comment '账户余额'
+)charset utf8;
+
+-- 插入数据
+
+insert into my_account values('0000000000000001','张三',1000),('0000000000000002','李四',2000);
+
+select * from my_account;
+
+alter table my_account add id int primary key auto_increment first;
+
+update my_account set money=money-1000 where id = 1;
+
+
+
+事务操作 分为  自动事务（默认）  手动事务：操作流程
+
+1.开启事务:告诉事务 的写操作 不要直接写入 到数据表，先存放到 事务日志
+--  开启事务
+
+start transaction；
+
+2  进行事务操作 ,一系列操作   -- 相当于 中转站
+a) 李四账户减少
+ update my_account set money=money-1000 where id = 2;
+--  生效（事务）  别人 查 数据 并没有开始变
+b) 张三账户增加
+update my_account set money=money+1000 where id =1;
+
+3 关闭事务：选择性的将日志中操作的结果 保存到数据表（同步）  或者 清空 事务表
+	a). 提交事务 ：commit
+	b).回滚事务:		rollback;
+
+事务 只能  在 innodb 引擎 下 操作  myisam不行
+
+--  事务 原理 ：事务开启 后 所有 的操作 都会临时保存到  事务日志  事务 日志 只有
+得到 commint 命令 才会同步其他情况  都会清空
+
+
+
+-- 
+
+回滚点 ：在某个成功的操作完成之后，后续的操作不确定  可以在当前成功的位置 设置一个个
+点 可供 后面的操作 返回 
+
+语法： 设置回滚点
+
+savepoint 回滚点名字；
+
+回到 回滚点语法： rollback to  回滚点名字
+
+-- 回滚点 操作
+-- 开启事务
+
+start transaction;
+
+-- 事务处理1:张三加钱
+
+
+select * from my_account;
+update my_account set money=money+10000 where id =1;
+
+-- 设置 回滚点
+
+savepoint sp1;
+
+
+-- 银行扣税
+update my_account set money=money-10000 *0.05 where id =2;  -- 错误
+
+
+select * from my_account;
+
+-- 执行 回滚
+
+rollback to sp1;
+
+-- 继续操作
+update my_account set money=money-10000 *0.05 where id =1; 
+
+--  查看结果
+
+select * from my_account;
+
+commit;
+ 
+#*****************************************************************
+
+-- 自动事务处理
+
+在mysql 操作完 会自动同步到数据表中。
+自动事务：系统通过 auto commit 变量控制
+
+show variables like 'autocommit';
+
+关闭自动提交
+
+set autocommit=off;
 
 
 
 
+手动 提交commit  rollback
 
 
 
+事务特性  ACID
 
+A	Atomic 原子性 要么全部成功 要么失败
+C	 Consistency 一致性  操作前后 数据 没变化
+I	 Isolation  隔离性 独立操作 不受影响 
+D	Durabil 持久性  一旦提交  永久的 改变 数据表 数据
 
-
-
-
-
+锁机制：innodb 默认是行锁  如果 在事务操作过程中 没有使用到索引  那么 自动升级到表锁
+别的用户不能曹组
