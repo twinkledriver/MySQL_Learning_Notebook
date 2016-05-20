@@ -886,7 +886,7 @@ set autocommit=off;
 
 事务特性  ACID
 
-A	Atom原子性 要么全部成功 要么失败
+A	Atomic 原子性 要么全部成功 要么失败
 C	 Consistency 一致性  操作前后 数据 没变化
 I	 Isolation  隔离性 独立操作 不受影响 
 D	Durabil 持久性  一旦提交  永久的 改变 数据表 数据

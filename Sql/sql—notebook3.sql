@@ -149,3 +149,7 @@ select * from information_schema.triggers;
 -- 使用触发器
 
 -- 插入订单  
+
+insert into my_order values(null,1,2);
+
+-- 触发器 确实执行了 只是 不符合要求

@@ -144,3 +144,8 @@ show create trigger after_order\G;
 所有触发器 都会保存到 一张表中  information_schema.triggers;
 
 select * from information_schema.triggers;
+
+
+-- 使用触发器
+
+-- 插入订单  
