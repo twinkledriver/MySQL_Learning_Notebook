@@ -153,3 +153,143 @@ select * from information_schema.triggers;
 insert into my_order values(null,1,2);
 
 -- 触发器 确实执行了 只是 不符合要求
+
+-- 触发器删除
+
+不能修改 只能删除
+
+drop trigger 触发器 名字
+
+drop trigger after_order;
+
+修改 正确触发器
+
+-- 触发器记录
+
+触发器记录 ：不管触发器 是否触发 只要 当 某种操作准备执行 系统就会将当前要操作的记录的当前状态 和
+即将执行之后的新的状态 分别 保留 下来，供 触发器使用：当前状态保存在 old中 操作之后的状态 new中
+
+old 代表的是 旧的记录
+
+都是代表记录本身  使用方式
+old.字段名  new.字段名
+
+-- 重写 触发器
+
+delimiter $$
+create trigger after_order after insert on my_order for each row
+begin -- 开始
+	update my_goods set inv =inv-new.g_number where id =new.g_id;
+end
+$$
+delimiter  ;
+
+
+查看 效果
+
+select * from my_goods;
+
+select * from my_order;
+
+插入订单 记录
+
+insert into my_order values(null,1,2);
+
+-- 库存判断 
+
+-- 代码执行结构  顺序 分支  循环
+
+
+#***************************************************
+分支结构
+在mysql 中 只有 if分支
+语法
+if 条件判断 then 
+		-- 执行代码
+Else
+		-- 否则执行
+End if;
+
+
+触发器 结合 if 分支：判断 商品库存是否足够，不够 不生成 订单
+
+-- 触发器：订单 之前 判断
+
+delimiter %%
+create trigger before_order before insert on my_order for each row
+begin			
+	select inv from my_goods where id =new.g_id into @inv;		--  获取 商品库存 获取 变量
+	if @inv <new.g_number then
+		insert into XXX values (XXX);					-- 暴力 终止
+	end if;
+end
+%%
+delimiter  ;
+
+--插入 订单 错误的
+
+insert into my_order values(null,1,10000);
+
+
+
+循环结构
+
+循环结构：
+
+While 条件判断 do
+		-- 满足条件 执行 的循环
+		-- 变更循环条件
+End while;
+
+循环控制：在循环内部进行循环判断 和 控制
+mysql 中 某有 continue break
+转而 用 iterate  迭代  代替 continue  后面代码不执行 循环重新来过
+leave 离开 类似 break
+
+使用方式 iterate leave 循环名字
+
+-- 定义循环名字
+循环名字 :while 条件 do
+		-- 循环体
+		-- 循环控制
+		Leave/iterate 循环名字
+	end while;
+
+#**************************************************************
+函数 
+
+函数：代码复用
+两类：系统函数  自定义
+
+系统函数：  系统定义好的函数：直接调用即可。任何函数 都有返回值
+			函数调用 以select调用
+
+Mysql  字符串的基本操作单位 是 字符
+
+Substring:截取字符串
+
+set @cn=' 中国周琦';
+set @en ='NBA draft';
+
+select substring(@cn,1,2);
+
+char_length:字符长度
+Length:字节长度
+
+select char_length(@cn);
+select length(@cn);
+
+instr：判断字符串 是否 在另一个字符串
+
+select instr(@cn,'周');
+
+Lpad：左填充，将字符串 按照某个指定的填充方式 填充到 指定长度
+select lpad (@cn,10,'中国');
+
+insert 替换 找到目标位置 替换成目标 字符串
+
+select insert(@en,1,1,'C');
+
+
+
+
