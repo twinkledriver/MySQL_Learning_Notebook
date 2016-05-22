@@ -290,7 +290,99 @@ insert 替换 找到目标位置 替换成目标 字符串
 
 select insert(@en,1,1,'C');
 
-比较
+#A*********************************************
+
+#自定义函数
+
+函数要素：函数名，参数列表，返回值，函数体（作用域）
+
+创建函数
+	create funciton 函数名 returns 数据类型
+	Begin 
+			--函数体
+			-- 返回值
+	end
+
+-- 举例
+create function display1() returns int
+return 100;
+
+-- 查看函数
+
+show function status;
+ 
+show create function 函数名;
+
+-- 修改函数 
+只能先删除 后新增
+drop funtion 函数名;
+
+-- 函数参数
+
+参数分为 定义时的参数 形参  调用时 的实参（数值或者变量）
+
+形参：必须指定数据类型
+
+funcion 函数名(形参名字)
+
+-- 举例：计算1 到指定数的和
+
+delimiter $$
+create function display(int_1 int) returns int
+begin
+	set @i=1;
+	set @res=0; 
+
+	while  @i<=int_1 do
+		set @res=@res +@i;-- 变量修改必须使用set关键字
+		set @i =@i +1;
+	end while;
+	return @res;
+end
+$$
+
+delimiter ;
+
+
+select @i ,@res;
+因为是 全局变量 在函数 外部 可以直接访问。
+
+
+-- 作用域
+
+mysql中的作用域 与js 中的作用域 完全一样
+	全局变量 可以在任何地方使用
+	局部变量 只能在函数内部使用
+
+全局变量 使用set关键字定义  用@符号
+局部变量  使用declare 关键字申明  所有局部变量 声明 必须在函数体 开始之前定义
+
+
+
+-- 求和 要求   5的倍数不加
+delimiter $$
+create function display2(int_1 int )returns int
+begin
+		declare i int default 1;
+		declare res int default 0;
+
+		mywhile:while i<=int_1 do
+			if i % 5 =0 then
+				set i=i+1;			--  修改循环条件
+				iterate mywhile;			--  重新循环 类似 continue;
+			end if;
+			set res=res+i;
+
+			set i=i+1;
+			end while;
+			return res;
+end
+$$
+delimiter ;
+
+
+ 
+
 
 
 
