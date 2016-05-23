@@ -418,6 +418,35 @@ call  pro1();
 
 drop procedure 过程名字 
 
+#存储过程中的参数
+
+函数的参数 需要数据类型指定，过程比函数更严格。过程还有自己的类型限定：三种类型
+
+In:类型：只能外部传入内部使用
+Out：给外部使用
+Inout：引用传递 
+
+语法 
+create procedure 过程名(in 形参名字  形参类型)
+
+-- 过程 参数
+
+delimiter $$
+create procedure pro2(in int_1 int,out int_2 int,inout int_3 int)
+begin
+	select int_1,int_2,int_3;
+end
+$$
+delimiter ;
+
+-- 调用  out inout   必须传入变量
+
+
+set @int_1=1,@int_2=2,@int_3=3;
+call pro2(@int_1,@int_2,@int_3);
+
+
+########结束了 视频 到 第六天  27 就没了  还是算入门了。买书继续看。
  
 
 

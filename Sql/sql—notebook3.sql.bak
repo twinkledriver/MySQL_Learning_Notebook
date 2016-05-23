@@ -380,7 +380,70 @@ end
 $$
 delimiter ;
 
+#******************************************************
 
+存储过程  简称 过程 procedure 用来 处理数据的方式  或者说 没有返回值 的函数
+
+创建过程
+create procedure 过程名字（参数） 
+begin
+		-- 过程体
+end
+
+-- 举例
+
+create procedure pro1() 
+select  *  from  te_student;
+
+-- 查看 过程
+
+函数 的查看方式  关键字 换成 preocedure
+
+
+show procedure status like 'pro%';
+
+show create procedure pro1;
+
+
+调用过程
+
+没有返回值 不能用select
+
+调用过程  用call
+
+call  pro1();
+
+
+删除过程
+
+drop procedure 过程名字 
+
+#存储过程中的参数
+
+函数的参数 需要数据类型指定，过程比函数更严格。过程还有自己的类型限定：三种类型
+
+In:类型：只能外部传入内部使用
+Out：给外部使用
+Inout：引用传递 
+
+语法 
+create procedure 过程名(in 形参名字  形参类型)
+
+-- 过程 参数
+
+delimiter $$
+create procedure pro2(in int_1 int,out int_2 int,inout int_3 int)
+begin
+	select int_1,int_2,int_3;
+end
+$$
+delimiter ;
+
+-- 调用  out inout   必须传入变量
+
+
+set @int_1=1,@int_2=2,@int_3=3;
+call pro2(@int_1,@int_2,@int_3);
  
 
 
